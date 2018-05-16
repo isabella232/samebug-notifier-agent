@@ -75,7 +75,7 @@ public class NotifierAgent {
     }
 
     static String parseConfig(final String arguments) {
-        if (arguments.startsWith("crashMonitorUrl=")) {
+        if (arguments != null && arguments.startsWith("crashMonitorUrl=")) {
             return arguments.substring("crashMonitorUrl=".length());
         } else {
             System.err.println("Failed to install Samebug notifier agent!");

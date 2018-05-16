@@ -15,7 +15,7 @@ public class CrashMonitorClient {
         final String crashMonitorAddress = System.getProperty("com.samebug.notifier.agent.crashMonitorUrl");
         URL crashMonitorUrl;
         try {
-            crashMonitorUrl = URI.create(crashMonitorAddress).toURL();
+            crashMonitorUrl = crashMonitorAddress != null ? URI.create(crashMonitorAddress).toURL() : null;
         } catch (MalformedURLException e) {
             crashMonitorUrl = null;
         }
