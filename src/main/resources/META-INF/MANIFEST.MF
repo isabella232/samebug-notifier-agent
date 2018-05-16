@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Premain-Class: com.samebug.notifier.agent.NotifierAgent
+Agent-Class: com.samebug.notifier.agent.NotifierAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+
