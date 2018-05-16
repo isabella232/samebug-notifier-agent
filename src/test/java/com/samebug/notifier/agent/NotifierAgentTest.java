@@ -20,8 +20,7 @@ public class NotifierAgentTest {
     @Test
     public void testAgent() throws Exception {
         final Instrumentation instrumentation = ByteBuddyAgent.install();
-        final ThrowableTransformer transformer = new ThrowableTransformer();
-        final AgentBuilder builder = transformer.createBuilder(instrumentation);
+        final AgentBuilder.Identified.Extendable builder = NotifierAgent.createBuilder();
         final ClassFileTransformer classFileTransformer = builder.installOnByteBuddyAgent();
         try {
             Class<?> type = classLoader.loadClass(Throwable.class.getName());
