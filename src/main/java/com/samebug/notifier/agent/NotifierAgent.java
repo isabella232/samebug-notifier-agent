@@ -4,10 +4,9 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
-import java.net.URL;
 import java.util.jar.JarFile;
 
 public class NotifierAgent {
@@ -30,6 +29,7 @@ public class NotifierAgent {
         try {
             final JarFile dispatcher = getDispatcherJar();
             instrumentation.appendToBootstrapClassLoaderSearch(dispatcher);
+            final NotifierThread notifierThread = new NotifierThread();
             final AgentBuilder builder = createBuilder();
             return builder.installOn(instrumentation);
         } catch (Exception e) {
@@ -39,10 +39,22 @@ public class NotifierAgent {
         }
     }
 
+    // Extracts the dispatcher jar to a tmp file, so it can be added to the class path.
+    // NOTE it is not enough to use the URL of the resource, because in production it is enclosed in the jar of the agent.
     static JarFile getDispatcherJar() throws IOException {
-        final URL dispatcherUrl = NotifierAgent.class.getResource("/notifier-agent-dispatcher.jar");
-        final JarFile dispatcherJar = new JarFile(dispatcherUrl.getFile());
-        return dispatcherJar;
+        final InputStream dispatcherJarContent = NotifierAgent.class.getResourceAsStream("/notifier-agent-dispatcher.jar");
+        final File tmpDispatcherJar = File.createTempFile("samebug_notifier_agent_", ".jar");
+        tmpDispatcherJar.deleteOnExit();
+        final OutputStream out = new FileOutputStream(tmpDispatcherJar);
+        byte[] buffer = new byte[8 * 1024];
+        int bytesRead;
+        while ((bytesRead = dispatcherJarContent.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+        dispatcherJarContent.close();
+        out.close();
+
+        return new JarFile(tmpDispatcherJar);
     }
 
     static AgentBuilder.Identified.Extendable createBuilder() {

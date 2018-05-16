@@ -45,7 +45,8 @@ public class CrashMonitorClient {
                     writer.close();
                 } catch (final IOException e) {
                     System.err.println("Crash monitor client failed to close output stream:\n");
-                    e.printStackTrace(System.err);
+                    // TODO need some protection against looping on reporting the report failure
+//                    e.printStackTrace(System.err);
                 }
             }
         }

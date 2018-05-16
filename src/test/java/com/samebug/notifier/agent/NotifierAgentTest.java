@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.util.jar.JarFile;
 
 public class NotifierAgentTest {
     private ClassLoader classLoader;
@@ -20,6 +21,7 @@ public class NotifierAgentTest {
     @Test
     public void testAgent() throws Exception {
         final Instrumentation instrumentation = ByteBuddyAgent.install();
+        instrumentation.appendToBootstrapClassLoaderSearch(NotifierAgent.getDispatcherJar());
         final AgentBuilder.Identified.Extendable builder = NotifierAgent.createBuilder();
         final ClassFileTransformer classFileTransformer = builder.installOnByteBuddyAgent();
         try {
